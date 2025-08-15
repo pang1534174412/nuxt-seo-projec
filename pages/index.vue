@@ -1,13 +1,16 @@
 <template>
   <div class="home">
     <section class="hero">
-      <h1 class="hero-title">欢迎来到Nuxt SEO项目</h1>
-      <p class="hero-description">
-        这是一个基于Nuxt 3构建的SEO优化示例项目，展示了如何使用Nuxt进行搜索引擎优化。
-      </p>
-      <div class="hero-actions">
-        <NuxtLink to="/about" class="btn btn-primary">了解更多</NuxtLink>
-        <NuxtLink to="/blog" class="btn btn-secondary">查看博客</NuxtLink>
+      <img src="/hero-image.jpg" alt="Nuxt SEO项目主页横幅图片，展示现代化网站设计" class="hero-bg" />
+      <div class="hero-content">
+        <h1 class="hero-title">欢迎来到Nuxt SEO项目</h1>
+        <p class="hero-description">
+          这是一个基于Nuxt 3构建的SEO优化示例项目，展示了如何使用Nuxt进行搜索引擎优化。
+        </p>
+        <div class="hero-actions">
+          <NuxtLink to="/about" class="btn btn-primary">了解更多</NuxtLink>
+          <NuxtLink to="/blog" class="btn btn-secondary">查看博客</NuxtLink>
+        </div>
       </div>
     </section>
 
@@ -71,11 +74,22 @@ useHead({
 }
 
 .hero {
+  position: relative;
   text-align: center;
   padding: 4rem 0;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   margin: -2rem -2rem 4rem -2rem;
+  overflow: hidden;
+}
+
+.hero-bg {
+  display: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
 }
 
 .hero-title {
