@@ -18,6 +18,7 @@ server/
 # IDE
 .vscode/
 .idea/
+.mcp.json
 
 # OS
 .DS_Store
