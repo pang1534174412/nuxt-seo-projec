@@ -6,6 +6,14 @@ export default defineNuxtConfig({
   // 模块配置
   modules: ['@nuxtjs/seo'],
 
+  // Site 配置 - @nuxtjs/seo 必需
+  site: {
+    url: process.env.NUXT_PUBLIC_SITE_URL || 'https://musicchat.app',
+    name: '音乐聊天',
+    description: '专为音乐爱好者打造的实时聊天平台。发现志同道合的朋友，分享音乐心得，交流听歌体验。',
+    defaultLocale: 'zh-CN'
+  },
+
   // SEO 模块配置
   robots: {
     // 基本配置
@@ -24,6 +32,17 @@ export default defineNuxtConfig({
     
     // 网站地图
     Sitemap: process.env.NUXT_PUBLIC_SITE_URL ? `${process.env.NUXT_PUBLIC_SITE_URL}/sitemap.xml` : 'https://musicchat.app/sitemap.xml'
+  },
+
+  // Sitemap 配置
+  sitemap: {
+    hostname: process.env.NUXT_PUBLIC_SITE_URL || 'https://musicchat.app',
+    gzip: true,
+    routes: [
+      '/',
+      '/messages',
+      '/profile'
+    ]
   },
 
   // SSR配置
@@ -262,6 +281,26 @@ export default defineNuxtConfig({
       // SEO关键文件预渲染
       '/sitemap.xml': { prerender: true, headers: { 'Content-Type': 'application/xml' } },
       '/robots.txt': { prerender: true, headers: { 'Content-Type': 'text/plain' } }
+    }
+  },
+
+  // Vite 配置 - 解决构建警告
+  vite: {
+    build: {
+      rollupOptions: {
+        external: (id) => {
+          // 排除有问题的 Nuxt 内部模块
+          if (id.includes('@nuxt/vite-builder/dist/runtime/')) {
+            return true
+          }
+          return false
+        }
+      }
+    },
+    optimizeDeps: {
+      exclude: [
+        '@nuxt/vite-builder'
+      ]
     }
   },
 
