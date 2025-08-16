@@ -7,7 +7,31 @@ export const API_CONFIG = {
 
 // 获取正确的 API 基础URL
 export const getApiBaseURL = () => {
-  if (process.client) {
+  // 在Nuxt环境中，优先使用运行时配置
+  if (process.server || process.client) {
+    try {
+      const runtimeConfig = useRuntimeConfig()
+      const apiBaseUrl = runtimeConfig.public.apiBaseUrl
+      
+      // 在开发环境中，始终使用直接的API URL
+      if (process.dev) {
+        return apiBaseUrl
+      }
+      
+      // 在生产环境中，客户端使用代理路径，服务端使用直接API
+      if (process.client) {
+        return '/api/proxy'
+      }
+      
+      return apiBaseUrl
+    } catch (error) {
+      // 如果无法获取运行时配置，fallback到默认配置
+      console.warn('无法获取运行时配置，使用默认API配置')
+    }
+  }
+  
+  // Fallback 逻辑（非Nuxt环境或出错时）
+  if (process.client && !process.dev) {
     return '/api/proxy'
   }
   return API_CONFIG.baseURL

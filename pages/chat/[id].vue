@@ -9,7 +9,14 @@
       </button>
       
       <div class="user-info" @click="goToUserDetail">
-        <img :src="targetUser.avatar" :alt="targetUser.name" class="avatar avatar-sm" />
+        <img 
+          :src="targetUser.avatar" 
+          :alt="`${targetUser.name}的头像 - ${targetUser.isOnline ? '在线' : '离线'}`" 
+          class="avatar avatar-sm" 
+          loading="lazy"
+          :width="32"
+          :height="32"
+        />
         <div class="user-details">
           <h3 class="user-name">{{ targetUser.name }}</h3>
           <span class="user-status" :class="{ online: targetUser.isOnline }">
@@ -36,7 +43,14 @@
           :class="['message-bubble', { 'is-mine': message.isFromMe }]"
         >
           <div v-if="!message.isFromMe" class="message-avatar">
-            <img :src="targetUser.avatar" :alt="targetUser.name" class="avatar avatar-xs" />
+            <img 
+              :src="targetUser.avatar" 
+              :alt="`${targetUser.name}的头像`" 
+              class="avatar avatar-xs" 
+              loading="lazy"
+              :width="24"
+              :height="24"
+            />
           </div>
           
           <div class="message-content">
@@ -47,7 +61,12 @@
             
             <!-- 图片消息 -->
             <div v-if="message.type === 'image'" class="message-image">
-              <img :src="message.content" :alt="message.content" @click="previewImage(message.content)" />
+              <img 
+                :src="message.content" 
+                :alt="`${message.isFromMe ? '我' : targetUser.name}发送的图片`" 
+                @click="previewImage(message.content)"
+                loading="lazy"
+              />
             </div>
             
             <div class="message-time">
@@ -156,15 +175,84 @@
 </template>
 
 <script setup>
-// 获取路由参数
+// 获取路由参数和配置
 const route = useRoute()
 const userId = route.params.id
+const runtimeConfig = useRuntimeConfig()
 
-// SEO配置
-useSeoMeta({
-  title: '聊天 - 聊天应用',
-  description: '与好友1v1聊天'
+// 动态SEO数据
+const messageCount = computed(() => messages.value.length)
+const isUserOnline = computed(() => targetUser.value.isOnline)
+const lastMessageTime = computed(() => {
+  if (messages.value.length > 0) {
+    return messages.value[messages.value.length - 1].timestamp
+  }
+  return new Date()
 })
+
+// 详细SEO配置
+useSeoMeta({
+  title: `与${targetUser.value.name}的音乐聊天${isUserOnline.value ? '(在线)' : '(离线)'} | ${runtimeConfig.public.siteName}`,
+  description: `与音乐爱好者${targetUser.value.name}的实时聊天。已交换${messageCount.value}条消息，分享音乐心得，交流聊天体验。支持文字、图片、表情多种消息类型。`,
+  keywords: `${targetUser.value.name},音乐聊天,1v1对话,即时通讯,音乐交流,在线聊天`,
+  
+  // OpenGraph优化
+  ogTitle: `与${targetUser.value.name}的音乐聊天`,
+  ogDescription: `与音乐爱好者${targetUser.value.name}的实时聊天。已交换${messageCount.value}条消息，分享音乐心得。`,
+  ogImage: targetUser.value.avatar,
+  ogImageAlt: `${targetUser.value.name}的头像`,
+  ogType: 'profile',
+  ogUrl: `${runtimeConfig.public.siteUrl}/chat/${userId}`,
+  
+  // Profile特有标签
+  profileFirstName: targetUser.value.name.split(' ')[0] || targetUser.value.name,
+  profileUsername: targetUser.value.name,
+  
+  // Twitter Card
+  twitterCard: 'summary',
+  twitterTitle: `与${targetUser.value.name}聊天`,
+  twitterDescription: `音乐聊天中，与${targetUser.value.name}分享音乐体验`,
+  
+  // 搜索引擎优化
+  robots: 'noindex, nofollow', // 私人聊天不应被索引
+  author: targetUser.value.name,
+  
+  // 内容分类
+  articleTag: ['私人聊天', '音乐交流', '即时通讯'],
+  
+  // 时间相关
+  lastModified: lastMessageTime.value.toISOString()
+})
+
+// 结构化数据 - 聊天页面
+useSchemaOrg([
+  defineWebPage({
+    name: `与${targetUser.value.name}的聊天`,
+    description: '音乐爱好者之间的私人对话',
+    url: `${runtimeConfig.public.siteUrl}/chat/${userId}`
+  }),
+  defineOrganization({
+    '@type': 'Conversation',
+    name: `与${targetUser.value.name}的聊天`,
+    description: '音乐爱好者之间的私人对话',
+    url: `${runtimeConfig.public.siteUrl}/chat/${userId}`,
+    participant: [
+      {
+        '@type': 'Person',
+        name: '我',
+        additionalType: 'CurrentUser'
+      },
+      {
+        '@type': 'Person',
+        name: targetUser.value.name,
+        image: targetUser.value.avatar,
+        additionalType: 'MusicEnthusiast'
+      }
+    ],
+    dateCreated: messages.value[0]?.timestamp?.toISOString() || new Date().toISOString(),
+    dateModified: lastMessageTime.value.toISOString()
+  })
+])
 
 // 响应式数据
 const inputMessage = ref('')

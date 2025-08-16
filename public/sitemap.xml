@@ -1,21 +1,158 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+                           http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  
+  <!-- 首页 - 最高优先级 -->
   <url>
-    <loc>https://example.com/</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://musicchat.app/</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://musicchat.app/og-image-large.jpg</image:loc>
+      <image:title>音乐聊天 - 发现音乐好友</image:title>
+      <image:caption>专为音乐爱好者打造的实时聊天平台</image:caption>
+    </image:image>
   </url>
+  
+  <!-- 消息中心页 -->
   <url>
-    <loc>https://example.com/messages</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://musicchat.app/messages</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://musicchat.app/og-messages.jpg</image:loc>
+      <image:title>消息中心 - 管理聊天对话</image:title>
+    </image:image>
+  </url>
+  
+  <!-- 个人中心页 -->
+  <url>
+    <loc>https://musicchat.app/profile</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://musicchat.app/og-profile.jpg</image:loc>
+      <image:title>个人中心 - 账户管理和设置</image:title>
+    </image:image>
   </url>
+  
+  <!-- 关于页面 -->
   <url>
-    <loc>https://example.com/profile</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://musicchat.app/about</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+  
+  <!-- 隐私政策 -->
+  <url>
+    <loc>https://musicchat.app/privacy</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <!-- 服务条款 -->
+  <url>
+    <loc>https://musicchat.app/terms</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <!-- 帮助中心 -->
+  <url>
+    <loc>https://musicchat.app/help</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- FAQ页面 -->
+  <url>
+    <loc>https://musicchat.app/faq</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- 联系我们 -->
+  <url>
+    <loc>https://musicchat.app/contact</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- 意见反馈 -->
+  <url>
+    <loc>https://musicchat.app/feedback</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- 功能介绍 -->
+  <url>
+    <loc>https://musicchat.app/features</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- 下载页面 -->
+  <url>
+    <loc>https://musicchat.app/download</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- 新闻动态 -->
+  <url>
+    <loc>https://musicchat.app/news</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+    <news:news>
+      <news:publication>
+        <news:name>音乐聊天官方</news:name>
+        <news:language>zh-cn</news:language>
+      </news:publication>
+      <news:publication_date>2025-08-16T12:00:00+08:00</news:publication_date>
+      <news:title>音乐聊天应用正式上线！</news:title>
+    </news:news>
+  </url>
+  
+  <!-- 博客或文章列表 -->
+  <url>
+    <loc>https://musicchat.app/blog</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- 社区指南 -->
+  <url>
+    <loc>https://musicchat.app/community-guidelines</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <!-- 安全中心 -->
+  <url>
+    <loc>https://musicchat.app/security</loc>
+    <lastmod>2025-08-16T12:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
 </urlset>

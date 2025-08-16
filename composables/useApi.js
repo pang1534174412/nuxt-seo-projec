@@ -1,14 +1,20 @@
 import { createMusicApi } from '~/utils/api.js'
 
 /**
- * 获取用户列表的 composable，支持 SSR/SSG
+ * 获取用户列表的 composable，支持 SSR/SSG 和响应式参数
  */
 export const useHallUsers = (params = {}) => {
-  const key = `hall-users-${JSON.stringify(params)}`
+  // 支持响应式参数
+  const reactiveParams = computed(() => {
+    return unref(params)
+  })
+  
+  // 使用响应式的key
+  const key = computed(() => `hall-users-${JSON.stringify(reactiveParams.value)}`)
   
   return useLazyAsyncData(key, async () => {
     const musicApi = createMusicApi()
-    const result = await musicApi.getHallUsers(params)
+    const result = await musicApi.getHallUsers(reactiveParams.value)
     
     if (result.success) {
       return result.data
@@ -21,6 +27,7 @@ export const useHallUsers = (params = {}) => {
   }, {
     default: () => ({ users: [], has_more: false, list: [] }),
     server: true, // 确保在服务端执行
+    watch: [reactiveParams], // 当参数变化时重新获取数据
     transform: (data) => {
       // 数据转换逻辑
       if (data?.ok === 1 && data?.data) {

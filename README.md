@@ -83,7 +83,7 @@ useSeoMeta({
   ogImage: '/og-image.jpg'
 })
 
-useJsonld({
+useSchemaOrg({
   '@context': 'https://schema.org',
   '@type': 'WebPage',
   name: '页面名称'

@@ -27,7 +27,14 @@
         @click="openChat(conversation)"
       >
         <div class="avatar-container">
-          <img :src="conversation.user.avatar" :alt="conversation.user.name" class="avatar avatar-md" />
+          <img 
+            :src="conversation.user.avatar" 
+            :alt="`${conversation.user.name}的头像 - 最后消息: ${conversation.lastMessage.content.slice(0, 20)}`" 
+            class="avatar avatar-md" 
+            loading="lazy"
+            :width="48"
+            :height="48"
+          />
           <div v-if="conversation.user.isOnline" class="online-dot"></div>
         </div>
         
@@ -58,11 +65,72 @@
 </template>
 
 <script setup>
-// SEO配置
-useSeoMeta({
-  title: '消息列表 - 聊天应用',
-  description: '查看所有聊天记录，继续你的对话'
+// 高级SEO配置
+const runtimeConfig = useRuntimeConfig()
+const route = useRoute()
+
+// 动态计算数据
+const unreadCount = computed(() => {
+  return conversations.value.reduce((total, conv) => total + conv.unreadCount, 0)
 })
+const conversationsCount = computed(() => conversations.value.length)
+
+// 详细SEO配置
+useSeoMeta({
+  title: `消息中心${unreadCount.value > 0 ? `(${unreadCount.value}条未读)` : ''} | ${runtimeConfig.public.siteName}`,
+  description: `查看所有聊天记录，管理${conversationsCount.value}个对话。支持图片、表情、文字多种消息类型，继续与好友的精彩对话。`,
+  keywords: '音乐聊天记录,消息管理,对话列表,在线沟通,聊天记录',
+  
+  // OpenGraph优化
+  ogTitle: `消息中心${unreadCount.value > 0 ? ` - ${unreadCount.value}条新消息` : ''}`,
+  ogDescription: `管理您的所有音乐聊天对话，与${conversationsCount.value}位好友保持联系。`,
+  ogImage: `${runtimeConfig.public.siteUrl}/og-messages.jpg`,
+  ogImageAlt: '消息中心页面截图',
+  ogType: 'website',
+  ogUrl: `${runtimeConfig.public.siteUrl}${route.fullPath}`,
+  
+  // Twitter Card
+  twitterCard: 'summary_large_image',
+  twitterTitle: `消息中心 - ${conversationsCount.value}个对话`,
+  twitterDescription: `管理您的所有音乐聊天对话，与好友保持联系。`,
+  
+  // 搜索引擎优化
+  robots: 'index, follow, max-snippet:-1',
+  author: '音乐聊天应用',
+  
+  // 内容分类
+  articleTag: ['聊天记录', '消息管理', '即时通讯']
+})
+
+// 结构化数据 - 消息页面
+useSchemaOrg([
+  defineWebPage({
+    '@type': 'CollectionPage',
+    name: '消息中心',
+    description: '管理所有聊天对话和消息记录',
+    url: `${runtimeConfig.public.siteUrl}${route.fullPath}`,
+    mainEntity: {
+      '@type': 'ItemList',
+      name: '聊天对话列表',
+      numberOfItems: conversationsCount.value,
+      itemListElement: conversations.value.slice(0, 5).map((conv, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'Message',
+          sender: {
+            '@type': 'Person',
+            name: conv.user.name,
+            image: conv.user.avatar
+          },
+          text: conv.lastMessage.content,
+          dateCreated: conv.lastMessage.time.toISOString(),
+          url: `${runtimeConfig.public.siteUrl}/chat/${conv.user.id}`
+        }
+      }))
+    }
+  })
+])
 
 // 搜索功能
 const searchQuery = ref('')

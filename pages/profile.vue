@@ -2,7 +2,14 @@
   <div class="profile-page">
     <header class="profile-header">
       <div class="user-avatar">
-        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=me" alt="我的头像" class="avatar avatar-lg" />
+        <img 
+          src="https://api.dicebear.com/7.x/avataaars/svg?seed=me" 
+          alt="我的头像 - 音乐聊天用户" 
+          class="avatar avatar-lg" 
+          loading="lazy"
+          :width="80"
+          :height="80"
+        />
         <div class="online-indicator"></div>
       </div>
       <h2 class="user-name">我的昵称</h2>
@@ -100,11 +107,68 @@
 </template>
 
 <script setup>
-// SEO配置
+// 高级SEO配置
+const runtimeConfig = useRuntimeConfig()
+const route = useRoute()
+
+// 详细SEO配置
 useSeoMeta({
-  title: '我的 - 聊天应用',
-  description: '个人资料和设置页面'
+  title: `个人中心 - 资料设置与管理 | ${runtimeConfig.public.siteName}`,
+  description: '管理您的音乐聊天账户。编辑个人资料、查看关注列表、管理拉黑名单、意见反馈、账户设置等功能。',
+  keywords: '个人中心,账户设置,编辑资料,关注管理,拉黑名单,音乐聊天设置',
+  
+  // OpenGraph优化
+  ogTitle: '个人中心 - 账户管理',
+  ogDescription: '管理您的音乐聊天账户，编辑个人资料，设置应用偏好。',
+  ogImage: `${runtimeConfig.public.siteUrl}/og-profile.jpg`,
+  ogImageAlt: '个人中心页面截图',
+  ogType: 'website',
+  ogUrl: `${runtimeConfig.public.siteUrl}/profile`,
+  
+  // Twitter Card
+  twitterCard: 'summary',
+  twitterTitle: '个人中心 - 账户管理',
+  twitterDescription: '管理您的音乐聊天账户，编辑资料和设置',
+  
+  // 搜索引擎优化
+  robots: 'noindex, nofollow', // 个人中心页面不应被索引
+  author: '当前用户',
+  
+  // 内容分类
+  articleTag: ['个人设置', '账户管理', '用户中心']
 })
+
+// 结构化数据 - 个人中心页面
+useSchemaOrg([
+  defineWebPage({
+    '@type': 'ProfilePage',
+    name: '个人中心',
+    description: '用户账户管理和设置页面',
+    url: `${runtimeConfig.public.siteUrl}/profile`,
+    mainEntity: {
+      '@type': 'Person',
+      name: '当前用户',
+      additionalType: 'RegisteredUser'
+    },
+    about: {
+      '@type': 'SoftwareApplication',
+      name: runtimeConfig.public.siteName,
+      description: '音乐聊天应用'
+    },
+    potentialAction: [
+      {
+        '@type': 'EditAction',
+        name: '编辑资料',
+        target: `${runtimeConfig.public.siteUrl}/profile/edit`
+      },
+      {
+        '@type': 'ViewAction',
+        name: '查看关注',
+        target: `${runtimeConfig.public.siteUrl}/follows`
+      }
+    ]
+  })
+])
 
 // 退出登录
 const logout = () => {

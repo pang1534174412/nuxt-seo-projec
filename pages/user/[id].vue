@@ -40,7 +40,14 @@
       <!-- 用户信息 -->
       <div class="user-info">
         <div class="avatar-section">
-          <img :src="user.avatar" :alt="user.name" class="avatar avatar-lg" />
+          <img
+            :src="user.avatar"
+            :alt="`${user.name}的头像 - ${user.status || '音乐爱好者'}`"
+            class="avatar avatar-lg"
+            loading="lazy"
+            :width="80"
+            :height="80"
+          />
           <div v-if="user.isOnline" class="online-dot"></div>
         </div>
         <h2 class="user-name">{{ user.name }}</h2>
@@ -59,7 +66,7 @@
             <span class="stat-label">关注</span>
           </div>
         </div>
-        
+
         <div class="action-buttons">
           <button class="btn btn-primary" @click="startChat">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -106,7 +113,11 @@
             class="photo-item"
             @click="viewPhoto(photo)"
           >
-            <img :src="photo.url" :alt="photo.description" />
+            <img
+              :src="photo.url"
+              :alt="photo.description || `${user.name}的相片 - ${photo.id}`"
+              loading="lazy"
+            />
           </div>
           <div v-if="user.photos.length === 0" class="empty-state">
             <p>暂无相册</p>
@@ -121,7 +132,14 @@
             class="moment-item"
           >
             <div class="moment-header">
-              <img :src="user.avatar" :alt="user.name" class="avatar avatar-sm" />
+              <img
+                :src="user.avatar"
+                :alt="`${user.name}的头像`"
+                class="avatar avatar-sm"
+                loading="lazy"
+                :width="32"
+                :height="32"
+              />
               <div class="moment-info">
                 <h4>{{ user.name }}</h4>
                 <span class="moment-time">{{ formatTime(moment.createdAt) }}</span>
@@ -133,8 +151,9 @@
                 v-for="(image, index) in moment.images"
                 :key="index"
                 :src="image"
-                :alt="moment.content"
+                :alt="`${user.name}的动态图片 - ${moment.content.slice(0, 20)}`"
                 class="moment-image"
+                loading="lazy"
               />
             </div>
             <div class="moment-actions">
@@ -187,14 +206,99 @@
 <script setup>
 import { imageUtils, errorHandler } from '~/utils/helpers.js'
 
-// 获取路由参数
+// 高级SEO配置
+const runtimeConfig = useRuntimeConfig()
 const route = useRoute()
 const userId = route.params.id
 
-// SEO配置
+// 动态SEO数据
+const photosCount = computed(() => user.value?.photos?.length || 0)
+const momentsCount = computed(() => user.value?.moments?.length || 0)
+const followersCount = computed(() => user.value?.followersCount || 0)
+const isOnline = computed(() => user.value?.isOnline || false)
+
+// 详细SEO配置
 useSeoMeta({
-  title: '用户详情 - 聊天应用',
-  description: '查看用户资料、相册和动态'
+  title: user.value ? `${user.value.name}${isOnline.value ? '(在线)' : ''} - 音乐爱好者资料 | ${runtimeConfig.public.siteName}` : '用户资料加载中...',
+  description: user.value ? `查看音乐爱好者${user.value.name}的详细资料。${followersCount.value}位粉丝，${photosCount.value}张相片，${momentsCount.value}条动态。${user.value.status || ''}与 TA 开始音乐聊天，分享音乐体验。` : '用户资料加载中...',
+  keywords: user.value ? `${user.value.name},音乐爱好者,用户资料,音乐社交,个人主页,音乐分享` : '用户资料',
+
+  // OpenGraph优化
+  ogTitle: user.value ? `${user.value.name} - 音乐爱好者` : '用户资料',
+  ogDescription: user.value ? `${user.value.name} 的个人主页。${followersCount.value}位粉丝，${photosCount.value}张相片，${momentsCount.value}条动态。与 TA 开始音乐聊天吧！` : '用户资料加载中',
+  ogImage: user.value?.avatar || `${runtimeConfig.public.siteUrl}/default-user.jpg`,
+  ogImageAlt: user.value ? `${user.value.name}的头像` : '默认用户头像',
+  ogType: 'profile',
+  ogUrl: `${runtimeConfig.public.siteUrl}/user/${userId}`,
+
+  // Profile特有标签
+  profileFirstName: user.value?.name?.split(' ')[0] || user.value?.name || '',
+  profileUsername: user.value?.name || '',
+  profileGender: 'unspecified', // 可以根据用户数据动态设置
+
+  // Twitter Card
+  twitterCard: 'summary',
+  twitterTitle: user.value ? `${user.value.name} - 音乐爱好者` : '用户资料',
+  twitterDescription: user.value ? `查看 ${user.value.name} 的个人主页，与 TA 开始音乐聊天` : '用户资料加载中',
+
+  // 搜索引擎优化
+  robots: 'index, follow, max-snippet:-1, max-image-preview:large',
+  author: user.value?.name || '未知用户',
+
+  // 内容分类
+  articleTag: ['用户资料', '音乐爱好者', '个人主页', '社交资料'],
+
+  // 地理位置（如果适用）
+  geoRegion: 'CN'
+})
+
+// 结构化数据 - 用户资料页面
+watchEffect(() => {
+  if (user.value) {
+    useSchemaOrg([
+      definePerson({
+        name: user.value.name,
+        image: user.value.avatar,
+        description: user.value.status || '音乐爱好者',
+        url: `${runtimeConfig.public.siteUrl}/user/${userId}`,
+        identifier: userId,
+        additionalType: 'MusicEnthusiast',
+        sameAs: [`${runtimeConfig.public.siteUrl}/chat/${userId}`], // 可以聊天的链接
+        interactionStatistic: [
+          {
+            '@type': 'InteractionCounter',
+            interactionType: 'https://schema.org/FollowAction',
+            userInteractionCount: followersCount.value
+          },
+          {
+            '@type': 'InteractionCounter',
+            interactionType: 'https://schema.org/CreateAction',
+            userInteractionCount: momentsCount.value
+          }
+        ],
+        mainEntityOfPage: {
+          '@type': 'ProfilePage',
+          name: `${user.value.name}的个人主页`,
+          description: '音乐爱好者个人资料页面',
+          url: `${runtimeConfig.public.siteUrl}/user/${userId}`,
+          about: {
+            '@type': 'Thing',
+            name: '音乐交流',
+            description: '与其他音乐爱好者分享音乐体验'
+          }
+        },
+        knowsAbout: ['音乐', '聊天', '社交'],
+        // 如果有相片，添加到结构化数据
+        ...(photosCount.value > 0 && {
+          image: user.value.photos?.slice(0, 5).map(photo => ({
+            '@type': 'ImageObject',
+            url: photo.url,
+            description: photo.description || `${user.value.name}的相片`
+          }))
+        })
+      })
+    ])
+  }
 })
 
 // 响应式数据
@@ -248,7 +352,7 @@ const blockUser = () => {
 const formatTime = (time) => {
   const now = new Date()
   const diff = now - time
-  
+
   if (diff < 60 * 1000) {
     return '刚刚'
   } else if (diff < 60 * 60 * 1000) {
