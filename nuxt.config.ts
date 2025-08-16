@@ -133,55 +133,39 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#667eea' },
         { name: 'color-scheme', content: 'light' },
         
-        // 应用商店相关
-        { name: 'apple-itunes-app', content: 'app-id=your-app-id, app-argument=your-app-url' },
-        { name: 'google-play-app', content: 'app-id=your.package.name' },
+        // 应用商店相关（移除虚假配置）
+        // { name: 'apple-itunes-app', content: 'app-id=your-app-id, app-argument=your-app-url' },
+        // { name: 'google-play-app', content: 'app-id=your.package.name' },
         
-        // 安全相关
+        // 安全相关（去重）
         { 'http-equiv': 'X-UA-Compatible', content: 'IE=edge' },
-        { name: 'referrer', content: 'origin-when-cross-origin' },
         
-        // 性能优化
+        // 性能优化（精简，移除重复）
         { name: 'dns-prefetch-control', content: 'on' },
-        { name: 'preconnect', content: 'https://api.dicebear.com' },
         
         // 无障碍支持
         { name: 'accessibility', content: 'high-contrast' }
       ],
       link: [
-        // Favicon 和图标全套
+        // 核心 Favicon 配置
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
-        { rel: 'icon', type: 'image/png', sizes: '48x48', href: '/favicon-48x48.png' },
-        { rel: 'icon', type: 'image/png', sizes: '64x64', href: '/favicon-64x64.png' },
-        { rel: 'icon', type: 'image/png', sizes: '96x96', href: '/favicon-96x96.png' },
-        { rel: 'icon', type: 'image/png', sizes: '128x128', href: '/favicon-128x128.png' },
         { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/favicon-192x192.png' },
-        { rel: 'icon', type: 'image/png', sizes: '256x256', href: '/favicon-256x256.png' },
         { rel: 'icon', type: 'image/png', sizes: '512x512', href: '/favicon-512x512.png' },
         
-        // Apple Touch Icons
-        { rel: 'apple-touch-icon', sizes: '57x57', href: '/apple-touch-icon-57x57.png' },
-        { rel: 'apple-touch-icon', sizes: '60x60', href: '/apple-touch-icon-60x60.png' },
-        { rel: 'apple-touch-icon', sizes: '72x72', href: '/apple-touch-icon-72x72.png' },
-        { rel: 'apple-touch-icon', sizes: '76x76', href: '/apple-touch-icon-76x76.png' },
-        { rel: 'apple-touch-icon', sizes: '114x114', href: '/apple-touch-icon-114x114.png' },
-        { rel: 'apple-touch-icon', sizes: '120x120', href: '/apple-touch-icon-120x120.png' },
-        { rel: 'apple-touch-icon', sizes: '144x144', href: '/apple-touch-icon-144x144.png' },
-        { rel: 'apple-touch-icon', sizes: '152x152', href: '/apple-touch-icon-152x152.png' },
+        // 核心 Apple Touch Icons
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon-180x180.png' },
+        { rel: 'apple-touch-icon', sizes: '152x152', href: '/apple-touch-icon-152x152.png' },
+        { rel: 'apple-touch-icon', sizes: '120x120', href: '/apple-touch-icon-120x120.png' },
         
         // PWA 相关
         { rel: 'manifest', href: '/site.webmanifest' },
         { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#667eea' },
         
-        // DNS 预取和预连接
+        // DNS 预取和预连接（精简）
         { rel: 'dns-prefetch', href: '//api.dicebear.com' },
-        { rel: 'dns-prefetch', href: '//fonts.googleapis.com' },
-        { rel: 'dns-prefetch', href: '//www.google-analytics.com' },
         { rel: 'preconnect', href: 'https://api.dicebear.com', crossorigin: '' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         
         // 搜索引擎发现
         { rel: 'sitemap', type: 'application/xml', href: '/sitemap.xml' },
@@ -288,12 +272,9 @@ export default defineNuxtConfig({
   vite: {
     build: {
       rollupOptions: {
-        external: (id) => {
+        external: (id: string) => {
           // 排除有问题的 Nuxt 内部模块
-          if (id.includes('@nuxt/vite-builder/dist/runtime/')) {
-            return true
-          }
-          return false
+          return id.includes('@nuxt/vite-builder/dist/runtime/')
         }
       }
     },
